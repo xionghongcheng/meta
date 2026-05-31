@@ -4,24 +4,24 @@ setlocal
 cd /d "%~dp0"
 
 if exist ".venv\Scripts\python.exe" (
-    ".venv\Scripts\python.exe" -B -m webui --open %*
+    ".venv\Scripts\python.exe" -B -m apps %*
     goto :end
 )
 
 where py >nul 2>nul
 if %errorlevel%==0 (
-    py -B -m webui --open %*
+    py -B -m apps %*
     goto :end
 )
 
 where python >nul 2>nul
 if %errorlevel%==0 (
-    python -B -m webui --open %*
+    python -B -m apps %*
     goto :end
 )
 
-echo [ERROR] No Python launcher was found.
-echo Please install Python or add it to PATH.
+echo [ERROR] No Python runtime was found.
+echo Portable package should include .venv\Scripts\python.exe.
 pause
 
 :end
