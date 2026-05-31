@@ -94,21 +94,27 @@ if (-not $SkipFFmpeg) {
         New-Item -ItemType Directory -Force -Path $vendor | Out-Null
         New-Item -ItemType Directory -Force -Path (Join-Path $Root "vendor\ffmpeg\bin") | Out-Null
 
+        $localArchive = Join-Path $vendor "ffmpeg-release-essentials.zip"
+
         if ((Test-Path $localFFmpeg) -and (Test-Path $localFFprobe)) {
             Write-Host "[setup] Copying FFmpeg from D:\soft\ffmpeg..."
             Copy-Item -LiteralPath $localFFmpeg -Destination $ffmpegExe -Force
             Copy-Item -LiteralPath $localFFprobe -Destination $ffprobeExe -Force
         } else {
-            Write-Host "[setup] Downloading FFmpeg..."
             $download = Join-Path $vendor "ffmpeg-release-essentials.zip"
             $extract = Join-Path $vendor "ffmpeg_extract"
             if (Test-Path $extract) {
                 Remove-Item -LiteralPath $extract -Recurse -Force
             }
-            Invoke-WithRetry -Name "FFmpeg download" -Retries 5 -DelaySeconds 10 -Action {
-                Invoke-WebRequest `
-                    -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" `
-                    -OutFile $download
+            if (Test-Path $localArchive) {
+                Write-Host "[setup] Extracting FFmpeg from local vendor archive."
+            } else {
+                Write-Host "[setup] Downloading FFmpeg..."
+                Invoke-WithRetry -Name "FFmpeg download" -Retries 5 -DelaySeconds 10 -Action {
+                    Invoke-WebRequest `
+                        -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" `
+                        -OutFile $download
+                }
             }
             Expand-Archive -Path $download -DestinationPath $extract -Force
             $bin = Get-ChildItem -Path $extract -Recurse -Directory -Filter "bin" |
@@ -119,7 +125,9 @@ if (-not $SkipFFmpeg) {
             }
             Copy-Item -LiteralPath (Join-Path $bin.FullName "ffmpeg.exe") -Destination $ffmpegExe -Force
             Copy-Item -LiteralPath (Join-Path $bin.FullName "ffprobe.exe") -Destination $ffprobeExe -Force
-            Remove-Item -LiteralPath $download -Force
+            if (-not (Test-Path $localArchive)) {
+                Remove-Item -LiteralPath $download -Force
+            }
             Remove-Item -LiteralPath $extract -Recurse -Force
         }
     }
