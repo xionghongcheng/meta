@@ -140,7 +140,7 @@ class RoughcutPipeline:
                 export_dir=str(workspace.roughcut_dir) if workspace else self.exporter.export_dir,
             )
         else:
-            project_path = self.exporter.export_simple(final_video, project_name) if final_video else ""
+            project_path = ""
 
         return {
             "status": "success",
