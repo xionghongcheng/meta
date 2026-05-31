@@ -13,7 +13,7 @@ from pyJianYingDraft import AudioSegment, DraftFolder, SEC, Timerange, TrackType
 from utils import ensure_dir, get_video_duration
 
 
-JIANYING_DRAFT_ROOT = os.path.expandvars(os.path.expanduser(os.getenv("JIANYING_DRAFT_ROOT", "E:/JianyingPro Drafts")))
+JIANYING_DRAFT_ROOT = os.path.expandvars(os.path.expanduser(os.getenv("JIANYING_DRAFT_ROOT", "F:/Media/02_剪映草稿")))
 
 
 class Skill5Exporter:

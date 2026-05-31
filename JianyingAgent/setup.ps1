@@ -1,7 +1,8 @@
 param(
     [switch]$SkipFFmpeg,
     [switch]$DownloadWhisperModel,
-    [string]$WhisperModel = "base"
+    [string]$WhisperModel = "base",
+    [string]$DraftRoot = "F:/Media/02_剪映草稿"
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,6 +62,13 @@ function Invoke-WithRetry {
             Start-Sleep -Seconds $DelaySeconds
         }
     }
+}
+
+if ($DraftRoot) {
+    New-Item -ItemType Directory -Force -Path $DraftRoot | Out-Null
+    Set-EnvValue -Path ".env" -Key "JIANYING_DRAFT_ROOT" -Value $DraftRoot
+    Set-EnvValue -Path ".env" -Key "JIAN_YING_PROJECT_DIR" -Value $DraftRoot
+    Write-Host "[setup] Jianying draft root: $DraftRoot"
 }
 
 $python = Get-Command py -ErrorAction SilentlyContinue
