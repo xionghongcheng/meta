@@ -150,8 +150,9 @@ class Skill2Transcriber:
 
         from faster_whisper import WhisperModel, BatchedInferencePipeline
 
-        device = self.config.WHISPER_DEVICE
-        if device == "cpu":
+        device = str(self.config.WHISPER_DEVICE or "cpu").lower()
+        if device == "auto":
+            device = "cpu"
             try:
                 import ctranslate2
                 if ctranslate2.get_supported_compute_types("cuda"):
@@ -160,13 +161,26 @@ class Skill2Transcriber:
             except Exception:
                 pass
 
-        with self._proxy_guard():
-            self.model = WhisperModel(
-                self.config.WHISPER_MODEL,
-                device=device,
-                compute_type="int8",
-                num_workers=self.tuned_workers,
-            )
+        try:
+            with self._proxy_guard():
+                self.model = WhisperModel(
+                    self.config.WHISPER_MODEL,
+                    device=device,
+                    compute_type="int8",
+                    num_workers=self.tuned_workers,
+                )
+        except Exception as exc:
+            if device != "cuda":
+                raise
+            self.logger.warning("CUDA Whisper加载失败，回退到CPU: %s", exc)
+            device = "cpu"
+            with self._proxy_guard():
+                self.model = WhisperModel(
+                    self.config.WHISPER_MODEL,
+                    device=device,
+                    compute_type="int8",
+                    num_workers=self.tuned_workers,
+                )
 
         self.pipeline = BatchedInferencePipeline(model=self.model)
 

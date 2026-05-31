@@ -91,7 +91,7 @@ class Config:
     # Whisper配置
     WHISPER_MODEL = "base"  # 可选: tiny, base, small, medium, large-v3
     WHISPER_LANGUAGE = "zh"
-    WHISPER_DEVICE = "cpu"  # 自动检测GPU，检测到会切换为cuda
+    WHISPER_DEVICE = os.getenv("WHISPER_DEVICE", "cpu")  # cpu / cuda / auto
     WHISPER_BATCH_SIZE = 24     # 调优默认值（被 auto_tune 覆盖）
     WHISPER_CHUNK_LENGTH = 20
     WHISPER_NUM_WORKERS = 4
