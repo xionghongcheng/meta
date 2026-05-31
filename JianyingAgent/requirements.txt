@@ -1,0 +1,6 @@
+faster-whisper
+numpy
+openpyxl
+pillow
+pyJianYingDraft
+requests

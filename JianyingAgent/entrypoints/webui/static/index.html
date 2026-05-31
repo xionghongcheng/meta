@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JianyingAgent 编导台</title>
+    <link rel="stylesheet" href="/static/styles.css?v=creator-desk1" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-nav">
+        <div class="brand-block">
+          <div class="brand-mark">JA</div>
+          <div>
+            <strong>JianyingAgent</strong>
+            <span>账号专属编导台</span>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="主导航">
+          <button class="nav-item active" type="button" data-view-target="home">首页</button>
+          <button class="nav-item" type="button" data-view-target="project">项目</button>
+          <button class="nav-item" type="button" data-view-target="library">资料库</button>
+          <button class="nav-item" type="button" data-view-target="settings">设置</button>
+        </nav>
+
+        <div class="service-card">
+          <span class="label">服务状态</span>
+          <strong id="health-status">连接中</strong>
+          <span id="current-workflow-badge">等待判断</span>
+        </div>
+      </aside>
+
+      <main class="main-stage">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Director Desk</p>
+            <h1 id="view-title">今天这期从哪里开始</h1>
+          </div>
+          <div class="project-pill">
+            <span>当前项目</span>
+            <strong id="active-project-name">新一期</strong>
+          </div>
+        </header>
+
+        <section id="view-home" class="view active">
+          <section class="panel command-panel">
+            <div class="section-head">
+              <p class="eyebrow">先让系统判断</p>
+              <h2>这期现在是什么状态？</h2>
+            </div>
+            <textarea
+              id="director-input"
+              rows="5"
+              placeholder="例如：素材已经拍好了，后面想再配音，先帮我判断这期能讲什么。"
+            ></textarea>
+            <div class="action-bar">
+              <button id="director-btn" class="primary-btn" type="button">判断下一步</button>
+              <button class="secondary-btn" type="button" data-view-target="project">继续项目</button>
+            </div>
+          </section>
+
+          <section class="mode-grid" aria-label="新项目入口">
+            <button class="mode-card" type="button" data-pick-workflow="script_first">
+              <span>先想内容再拍</span>
+              <strong>从选题、脚本和拍摄清单开始</strong>
+              <em>适合任务型、商单型、提前规划型内容</em>
+            </button>
+            <button class="mode-card" type="button" data-pick-workflow="material_first">
+              <span>先拍素材再提炼</span>
+              <strong>从已有素材里找这一期的主线</strong>
+              <em>适合生活先发生、拍完后再后配音</em>
+            </button>
+            <button class="mode-card" type="button" data-pick-workflow="roughcut">
+              <span>直接粗剪</span>
+              <strong>已有脚本和素材，先出时间线</strong>
+              <em>适合快速生成剪映草稿</em>
+            </button>
+          </section>
+
+          <section class="panel project-overview">
+            <div class="section-head">
+              <p class="eyebrow">项目进度</p>
+              <h2>一条内容的推进顺序</h2>
+            </div>
+            <div id="home-stage-rail" class="stage-rail"></div>
+          </section>
+        </section>
+
+        <section id="view-project" class="view">
+          <section class="project-header panel">
+            <label class="project-name-field">
+              <span>项目名</span>
+              <input id="project-title-input" type="text" value="新一期" />
+            </label>
+            <div class="project-state">
+              <span>当前阶段</span>
+              <strong id="project-stage-label">定位</strong>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-head">
+              <p class="eyebrow">项目阶段</p>
+              <h2>从判断到导出</h2>
+            </div>
+            <div id="project-stage-rail" class="stage-rail"></div>
+          </section>
+
+          <section class="project-grid">
+            <div class="project-main">
+              <section class="panel">
+                <div class="section-head">
+                  <p class="eyebrow">系统建议</p>
+                  <h2>推荐方向</h2>
+                </div>
+                <div id="advisor-card" class="advisor-card empty">
+                  <strong>还没有建议</strong>
+                  <span>在首页输入这期状态，或直接选择一种开始方式。</span>
+                </div>
+                <div id="advisor-actions" class="advisor-actions"></div>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <p class="eyebrow">下一步</p>
+                  <h2 id="workflow-form-title">等待判断</h2>
+                </div>
+
+                <div id="task-empty" class="task-empty">
+                  <strong>先选择这一期的入口</strong>
+                  <span>系统会只展示当前阶段需要填写的内容。</span>
+                </div>
+
+                <div id="panel-script-first" class="workflow-pane hidden">
+                  <div class="workflow-intro">
+                    <strong>先想内容再拍</strong>
+                    <span>把选题想法变成脚本建议、拍摄清单和复核意见。</span>
+                  </div>
+                  <label class="field">
+                    <span>选题想法</span>
+                    <textarea id="script-first-idea" rows="5" placeholder="例如：带妈妈去逛街买衣服，让她自己选一身喜欢的。"></textarea>
+                  </label>
+                  <div class="action-bar">
+                    <button class="primary-btn" type="button" data-run-workflow="script_first">生成脚本建议</button>
+                  </div>
+                </div>
+
+                <div id="panel-material-first" class="workflow-pane hidden">
+                  <div class="workflow-intro">
+                    <strong>先拍素材再提炼</strong>
+                    <span>读取素材、转写声音、提炼可讲方向。</span>
+                  </div>
+                  <div class="grid-two">
+                    <label class="field">
+                      <span>素材目录</span>
+                      <input id="material-source-dir" type="text" placeholder="E:\素材\某一期素材" />
+                    </label>
+                    <label class="field">
+                      <span>项目名</span>
+                      <input id="material-project-name" type="text" placeholder="不填则使用目录名" />
+                    </label>
+                  </div>
+                  <label class="field">
+                    <span>补充说明</span>
+                    <textarea
+                      id="material-notes"
+                      rows="5"
+                      placeholder="例如：我想保留妈妈和女朋友的互动，重点找适合后配音的画面。"
+                    ></textarea>
+                  </label>
+                  <div class="action-bar">
+                    <button class="primary-btn" type="button" data-run-workflow="material_first">分析素材并提炼方向</button>
+                  </div>
+                </div>
+
+                <div id="panel-roughcut" class="workflow-pane hidden">
+                  <div class="workflow-intro">
+                    <strong>直接自动粗剪</strong>
+                    <span>用明确脚本驱动素材筛选，生成剪映草稿。</span>
+                  </div>
+                  <div class="grid-two">
+                    <label class="field">
+                      <span>素材目录</span>
+                      <input id="roughcut-source-dir" type="text" placeholder="E:\素材\采茶" />
+                    </label>
+                    <label class="field">
+                      <span>项目名</span>
+                      <input id="roughcut-project-name" type="text" placeholder="采茶_小熊" />
+                    </label>
+                  </div>
+                  <div class="grid-two">
+                    <label class="field">
+                      <span>字幕 SRT</span>
+                      <input id="roughcut-srt" type="text" placeholder="可留空" />
+                    </label>
+                    <label class="field">
+                      <span>BGM</span>
+                      <input id="roughcut-bgm" type="text" placeholder="可留空" />
+                    </label>
+                  </div>
+                  <label class="field">
+                    <span>配音音频</span>
+                    <input id="roughcut-voiceover" type="text" placeholder="例如：E:\配音\喂鸽子.wav" />
+                  </label>
+                  <div class="grid-three">
+                    <label class="field">
+                      <span>目标时长（秒）</span>
+                      <input id="roughcut-duration" type="number" value="180" />
+                    </label>
+                    <label class="field">
+                      <span>画布宽度</span>
+                      <input id="roughcut-width" type="number" placeholder="默认配置" />
+                    </label>
+                    <label class="field">
+                      <span>画布高度</span>
+                      <input id="roughcut-height" type="number" placeholder="默认配置" />
+                    </label>
+                  </div>
+                  <label class="field">
+                    <span>剪辑脚本</span>
+                    <textarea
+                      id="roughcut-script"
+                      rows="6"
+                      placeholder="例如：带妈妈体验采茶制茶，重点保留第一次上手、闻茶叶、揉茶和最后的笑。"
+                    ></textarea>
+                  </label>
+                  <label class="checkbox-row">
+                    <input id="roughcut-export-jcc" type="checkbox" checked />
+                    <span>导出剪映草稿</span>
+                  </label>
+                  <div class="action-bar">
+                    <button class="primary-btn" type="button" data-run-workflow="roughcut">启动粗剪任务</button>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <aside class="project-side">
+              <section class="panel">
+                <div class="section-head">
+                  <p class="eyebrow">最近产出</p>
+                  <h2>结果</h2>
+                </div>
+                <pre id="latest-result" class="output-block"></pre>
+              </section>
+
+              <section class="panel">
+                <div class="section-head">
+                  <p class="eyebrow">任务</p>
+                  <h2>执行历史</h2>
+                </div>
+                <div class="action-bar compact">
+                  <button id="refresh-jobs-btn" class="secondary-btn" type="button">刷新</button>
+                </div>
+                <div id="jobs-list" class="jobs-list"></div>
+              </section>
+            </aside>
+          </section>
+        </section>
+
+        <section id="view-library" class="view">
+          <section class="library-grid">
+            <div class="panel">
+              <div class="section-head">
+                <p class="eyebrow">账号资料</p>
+                <h2>故事库画像</h2>
+              </div>
+              <label class="field">
+                <span>故事库路径</span>
+                <input id="profile-memory" type="text" placeholder="shared_base\memory\stories.json" />
+              </label>
+              <div class="action-bar">
+                <button id="profile-btn" class="primary-btn" type="button">查看画像</button>
+              </div>
+              <pre id="memory-output" class="output-block large"></pre>
+            </div>
+
+            <div class="panel">
+              <div class="section-head">
+                <p class="eyebrow">历史内容</p>
+                <h2>导入配音稿</h2>
+              </div>
+              <label class="field">
+                <span>历史配音 txt 路径</span>
+                <textarea id="ingest-files" rows="5" placeholder="每行一个 txt 路径"></textarea>
+              </label>
+              <label class="field">
+                <span>输出 stories.json 路径</span>
+                <input id="ingest-out" type="text" placeholder="默认写入 shared_base\memory\stories.json" />
+              </label>
+              <div class="action-bar">
+                <button id="ingest-btn" class="primary-btn" type="button">导入故事库</button>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="view-settings" class="view">
+          <section class="settings-grid">
+            <div class="panel">
+              <div class="section-head">
+                <p class="eyebrow">运行信息</p>
+                <h2>本地服务</h2>
+              </div>
+              <pre id="health-meta" class="output-block"></pre>
+            </div>
+            <div class="panel">
+              <div class="section-head">
+                <p class="eyebrow">底层能力</p>
+                <h2>工作流定义</h2>
+              </div>
+              <div id="workflow-catalog" class="catalog"></div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="job-template">
+      <article class="job-item">
+        <div class="job-top">
+          <div>
+            <strong class="job-title"></strong>
+            <div class="job-sub"></div>
+          </div>
+          <span class="job-state"></span>
+        </div>
+        <div class="job-message"></div>
+        <pre class="job-result"></pre>
+        <pre class="job-logs"></pre>
+      </article>
+    </template>
+
+    <script src="/static/app.js?v=creator-desk1"></script>
+  </body>
+</html>

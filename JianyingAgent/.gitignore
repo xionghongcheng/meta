@@ -1,0 +1,52 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+
+# Local runtime/dependency bundles managed via GitHub Releases
+vendor/
+runtime/
+models/
+
+# Media, inputs, outputs, and temporary working files
+input/
+output/
+temp/
+logs/
+*.log
+*.mp4
+*.mov
+*.MOV
+*.mkv
+*.avi
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.srt
+
+# Release/build artifacts
+dist/
+release/
+releases/
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
